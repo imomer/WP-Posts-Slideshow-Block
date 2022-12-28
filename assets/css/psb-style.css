@@ -1,0 +1,92 @@
+/* Edit CSS */
+.psb-editor-placeholder {
+  border: #ccc dashed 3px;
+  border-radius: 10px;
+  padding: 10px 15px;
+}
+.psb-edit__heading {
+  margin: 0 0 5px;
+}
+.psb-edit__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Front-End */
+#psb__wrapper {
+  display: flex;
+  position: relative;
+}
+#psb__wrapper .psb__control {
+  top: 50%;
+  height: 44px;
+  width: 44px;
+  color: #343f4f;
+  cursor: pointer;
+  font-size: 10px;
+  position: absolute;
+}
+#psb__wrapper .psb__control:first-child {
+  left: -35px;
+  display: none;
+}
+#psb__wrapper .psb__control:last-child {
+  right: -35px;
+}
+#psb__wrapper .psb__control img {
+  width: 40px;
+  height: 40px;
+}
+#psb__wrapper .psb__slider {
+  cursor: pointer;
+  overflow: hidden;
+  scroll-behavior: smooth;
+  display: flex;
+  flex-wrap: nowrap;
+}
+#psb__wrapper .psb__slider.dragging {
+  cursor: grab;
+  scroll-behavior: auto;
+}
+.psb__slider.dragging div {
+  pointer-events: none;
+}
+.psb__slider .psb__slide {
+  overflow: hidden;
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+.psd__post-title {
+  margin: 5px 0;
+}
+.psb__post-excerpt p {
+  margin-top: 0;
+}
+.psb__post-thumb {
+  height: 140px;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+@media screen and (max-width: 900px) {
+  .psb__slide {
+      flex: 0 0 calc(100% / 2) !important;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .psb__slide {
+      flex: 0 0 100% !important;
+  }
+}
+
+/* Overrides */
+.psb-editor-placeholder .components-toggle-control,
+.psb-editor-placeholder .components-base-control__field {
+  margin-bottom: 0;
+}
+.psb-editor-placeholder .components-spinner {
+  margin-right: 0;
+}

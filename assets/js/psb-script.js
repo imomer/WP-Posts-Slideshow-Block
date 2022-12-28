@@ -18,6 +18,7 @@
       hidePostThumb: { type: "boolean" },
       hidePostDate: { type: "boolean" },
       hidePostExcerpt: { type: "boolean" },
+      perSlide: { type: "string" },
     },
     keywords: ["slider", "posts", "slideshow"],
 
@@ -28,7 +29,8 @@
         remotePostsSaved = props.attributes.remotePostsSaved,
         hidePostThumb = props.attributes.hidePostThumb,
         hidePostDate = props.attributes.hidePostDate,
-        hidePostExcerpt = props.attributes.hidePostExcerpt;
+        hidePostExcerpt = props.attributes.hidePostExcerpt,
+        perSlide = props.attributes.perSlide;
 
       // Get & Set posts
       if (!remotePosts) {
@@ -50,6 +52,9 @@
       };
       const changeHidePostThumb = () => {
         props.setAttributes({ hidePostThumb: !hidePostThumb });
+      };
+      const changePerSlide = (perSlide) => {
+        props.setAttributes({ perSlide });
       };
 
       return el(
@@ -88,6 +93,17 @@
             label: "Hide Post Excerpt",
             checked: hidePostExcerpt,
             onChange: changeHidePostExcerpt,
+          }),
+          el("label", { style: { fontSize: 13 } }, "Posts Per Slide"),
+          el(components.TextControl, {
+            type: "number",
+            value: perSlide,
+            style: {
+              width: 50,
+            },
+            onChange: changePerSlide,
+            min: 1,
+            max: 5,
           })
         )
       );

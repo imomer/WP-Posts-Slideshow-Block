@@ -13,10 +13,15 @@
 function posts_slideshow_block_assets()
 {
   // CSS
-  wp_enqueue_style('posts-slideshow-block-style', plugin_dir_url(__FILE__) . 'psb-style.css', [], true);
+  wp_enqueue_style('posts-slideshow-block-style', plugin_dir_url(__FILE__) . 'assets/css/psb-style.css', [], true);
 
   // JS
-  wp_enqueue_script('posts-slideshow-block-js', plugin_dir_url(__FILE__) . 'psb-script.js', ['wp-blocks', 'wp-element', 'wp-editor'], true);
+  wp_enqueue_script('posts-slideshow-block-js', plugin_dir_url(__FILE__) . 'assets/js/psb-script.js', ['wp-blocks', 'wp-element', 'wp-editor'], true);
+
+  // If not in admin
+  if (!is_admin()) {
+    wp_enqueue_script('posts-slideshow-block-slider-js', plugin_dir_url(__FILE__) . 'assets/js/psb-slider.js', [], true, true);
+  }
 }
 add_action('enqueue_block_assets', 'posts_slideshow_block_assets');
 
@@ -31,13 +36,13 @@ function psb_dynamic_block_render_callback($attributes)
   $hidePostThumb = $attributes['hidePostThumb'];
   $hidePostDate = $attributes['hidePostDate'];
   $hidePostExcerpt = $attributes['hidePostExcerpt'];
-
-  // echo '<pre>', print_r($attributes), '</pre>';
-  // die;
+  $perSlide = $attributes['perSlide'];
 
   // Output
   ob_start();
   if (isset($remotePosts) && count($remotePosts) > 0) {
+
+    echo '<style>.psb__slide{flex: 0 0 calc(100% / ' . (isset($perSlide) ? $perSlide : 2) . ')}</style>';
 
     echo '<div id="psb__wrapper">';
     echo '<div class="psb__slider">';
@@ -64,8 +69,16 @@ function psb_dynamic_block_render_callback($attributes)
       echo '</div>';
     }
 
-    echo "</div>";
-    echo "</div>";
+    echo '</div>';
+    echo '<div class="psb__controls">
+      <span id="psb_prev" class="psb__control">
+        <img src="' . plugin_dir_url(__FILE__) . '/assets/images/icon-prev.svg" alt="Previous" />
+      </span>
+      <span id="psb_next" class="psb__control">
+        <img src="' . plugin_dir_url(__FILE__) . '/assets/images/icon-next.svg" alt="Next" />
+      </span>
+    </div>';
+    echo '</div>';
   }
 
   return ob_get_clean();
