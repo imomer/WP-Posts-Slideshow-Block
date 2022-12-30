@@ -14,7 +14,8 @@
     category: "widgets",
     attributes: {
       remotePosts: { type: "object" },
-      remotePostsSaved: { type: "boolean" },
+      fetchingPosts: { type: "boolean" },
+      apiURL: { type: "string" },
       hidePostThumb: { type: "boolean" },
       hidePostDate: { type: "boolean" },
       hidePostExcerpt: { type: "boolean" },
@@ -25,25 +26,52 @@
     // Edit
     edit: (props) => {
       // Vars
-      var remotePosts = props.attributes.remotePosts,
-        remotePostsSaved = props.attributes.remotePostsSaved,
+      var fetchingPosts = props.attributes.fetchingPosts,
+        apiURL = props.attributes.apiURL,
         hidePostThumb = props.attributes.hidePostThumb,
         hidePostDate = props.attributes.hidePostDate,
         hidePostExcerpt = props.attributes.hidePostExcerpt,
-        perSlide = props.attributes.perSlide;
+        perSlide = props.attributes.perSlide || 2;
 
       // Get & Set posts
-      if (!remotePosts) {
-        fetch("https://wptavern.com/wp-json/wp/v2/posts")
+      const getSetPosts = () => {
+        props.setAttributes({ fetchingPosts: true });
+
+        // APU URL field should not be empty or undefined
+        if (apiURL == "" || apiURL == undefined) {
+          alert("Please input API endpoint before fetching.");
+          return;
+        }
+
+        // API URL should be a valid URL
+        if (!isValidApiUrl(apiURL)) {
+          alert("Please input a valid API endpoint before fetching.");
+          return;
+        }
+
+        // If all good, go and fetch boy 🐶
+        fetch(apiURL)
           .then((res) => {
             return res.json();
           })
           .then((posts) =>
-            props.setAttributes({ remotePosts: posts, remotePostsSaved: true })
+            props.setAttributes({ remotePosts: posts, fetchingPosts: false })
           );
-      }
+      };
+
+      // Validate API URL
+      const isValidApiUrl = (apiURL) => {
+        var apiUrlPattern = new RegExp(
+          "^(https?:\\/\\/)?((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*(\\?[;&a-z\\d%_.~+=-]*)?(\\#[-a-z\\d_]*)?$",
+          "i"
+        );
+        return !!apiUrlPattern.test(apiURL);
+      };
 
       // On change
+      const changeApiUrl = (apiURL) => {
+        props.setAttributes({ apiURL });
+      };
       const changeHidePostDate = () => {
         props.setAttributes({ hidePostDate: !hidePostDate });
       };
@@ -64,7 +92,7 @@
           "div",
           { className: "psb-edit__row" },
           el("h6", { className: "psb-edit__heading" }, "Posts Slideshow Block"),
-          !remotePostsSaved &&
+          fetchingPosts &&
             el(
               "div",
               null,
@@ -75,6 +103,54 @@
               ),
               el(components.Spinner)
             )
+        ),
+        el(
+          "div",
+          {
+            className: "psb-edit__row psb-edit__row-api-field",
+            style: { marginBottom: 10 },
+          },
+          el(components.TextControl, {
+            placeholder: "API URL",
+            value: apiURL,
+            onChange: changeApiUrl,
+          }),
+          el(
+            "button",
+            {
+              className: "components-button is-primary",
+              style: {
+                height: 32,
+                marginLeft: 5,
+                marginRight: 15,
+                justifyContent: "center",
+              },
+              onClick: getSetPosts,
+              disabled: fetchingPosts,
+            },
+            "Fetch Posts"
+          ),
+          el(
+            "div",
+            {
+              style: {
+                display: "flex",
+                alignItems: "center",
+              },
+            },
+            el("label", { style: { fontSize: 13 } }, "Posts Per Slide"),
+            el(components.TextControl, {
+              type: "number",
+              value: perSlide,
+              style: {
+                width: 50,
+                marginLeft: 7,
+              },
+              onChange: changePerSlide,
+              min: 1,
+              max: 5,
+            })
+          )
         ),
         el(
           "div",
@@ -93,17 +169,6 @@
             label: "Hide Post Excerpt",
             checked: hidePostExcerpt,
             onChange: changeHidePostExcerpt,
-          }),
-          el("label", { style: { fontSize: 13 } }, "Posts Per Slide"),
-          el(components.TextControl, {
-            type: "number",
-            value: perSlide,
-            style: {
-              width: 50,
-            },
-            onChange: changePerSlide,
-            min: 1,
-            max: 5,
           })
         )
       );

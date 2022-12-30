@@ -12,6 +12,9 @@
   justify-content: space-between;
   align-items: center;
 }
+.psb-edit__row-api-field > div:first-child {
+  flex: 1;
+}
 
 /* Front-End */
 #psb__wrapper {
